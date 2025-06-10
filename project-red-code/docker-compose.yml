@@ -1,0 +1,48 @@
+version: '3.3'
+
+services:
+  mqtt:
+    image: eclipse-mosquitto:latest
+    container_name: mqtt
+    ports:
+      - "1884:1883"  # Puerto para conexiones MQTT
+    volumes:
+      - ./mqtt/config:/mosquitto/config  # Volumen para configuración
+    networks:
+      - app-network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  recepcion:
+    build: ./recepcion
+    container_name: recepcion
+    depends_on:
+      - mqtt
+      - redis
+    networks:
+      - app-network
+
+  app:
+    build: ./app
+    container_name: app
+    environment:
+      - DASH_DEBUG_MODE=False  #Es necesario definir esta variable de entorno para el funcionamiento de Dash
+    depends_on:
+      - redis
+    ports:
+      - "8050:8050"  # Puerto donde corre la aplicación Dash
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mqtt-config:
