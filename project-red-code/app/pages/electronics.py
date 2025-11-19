@@ -8,6 +8,7 @@ from dash.exceptions import PreventUpdate
 import interfaceUpdater
 import redisConector as rc
 
+
 redisConector = rc.redisConector()
 dash.register_page(__name__)
 layout=html.Div(id='element-to-hide', style={'display':'none'}),\
